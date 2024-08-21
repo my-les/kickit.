@@ -93,14 +93,16 @@ class GameScene: SKScene {
 
     private func setupLabels() {
         clockLabel = SKLabelNode(text: "00:00.000")
-        clockLabel.position = CGPoint(x: size.width / 2, y: size.height - 40)
+        clockLabel.position = CGPoint(x: size.width / 2, y: size.height - 75)
         clockLabel.fontName = "CourierNewPS-BoldMT"
         clockLabel.fontColor = .white
+        clockLabel.fontSize = 19
         addChild(clockLabel)
 
         scoreLabel = SKLabelNode(text: "0")
-        scoreLabel.position = CGPoint(x: size.width / 2, y: size.height - 80)
+        scoreLabel.position = CGPoint(x: size.width / 2, y: size.height - 95)
         scoreLabel.fontName = "CourierNewPS-BoldMT"
+        scoreLabel.fontSize = 16
         scoreLabel.fontColor = .white
         addChild(scoreLabel)
 
@@ -246,7 +248,7 @@ class GameScene: SKScene {
             emojiNode.fontSize = 18
         } else {
             // Randomly select an enemy emoji
-            let enemyEmojis = ["🍑", "🍸", "📱", "🥡"]
+            let enemyEmojis = ["🍟", "🍸", "📱", "🥡", "🚔"]
             let randomIndex = Int(arc4random_uniform(UInt32(enemyEmojis.count)))
             emojiNode = SKLabelNode(text: enemyEmojis[randomIndex])
         }

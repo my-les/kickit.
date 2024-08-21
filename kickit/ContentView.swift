@@ -6,7 +6,6 @@ struct ContentView: View {
 
     var scene: SKScene {
         let scene = GameScene(gameCenterManager: gameCenterManager)
-        scene.size = CGSize(width: 300, height: 600)
         scene.scaleMode = .resizeFill
         return scene
     }
@@ -14,7 +13,7 @@ struct ContentView: View {
     var body: some View {
         VStack {
             SpriteView(scene: scene)
-                .frame(width: 300, height: 600)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .ignoresSafeArea()
 
             if !gameCenterManager.isAuthenticated {
@@ -23,10 +22,10 @@ struct ContentView: View {
                     .monospaced()
                     .padding()
             } else {
-                Text("how to play: tap & chase the money 😤💸")
+                Text("how to play: tap & chase the money 😤💵")
                     .font(.caption2)
                     .monospaced()
-                    .padding()
+                    .padding()          
 
             }
         }
