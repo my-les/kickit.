@@ -178,7 +178,7 @@ class GameScene: SKScene {
     private func reportScoreToGameCenter(_ score: Int) {
         guard let gameCenterManager = gameCenterManager, gameCenterManager.isAuthenticated else { return }
 
-        GKLeaderboard.submitScore(score, context: 0, player: GKLocalPlayer.local, leaderboardIDs: ["your_leaderboard_id"]) { error in
+        GKLeaderboard.submitScore(score, context: 0, player: GKLocalPlayer.local, leaderboardIDs: ["002"]) { error in
             if let error = error {
                 print("Error submitting score to Game Center: \(error.localizedDescription)")
             } else {

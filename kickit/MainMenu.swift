@@ -13,31 +13,39 @@ class MainMenuScene: SKScene {
         backgroundColor = .black
 
         // Create the title label
-        let titleLabel = SKLabelNode(text: "My Game")
+        let titleLabel = SKLabelNode(text: "kickit.")
         titleLabel.fontName = "CourierNewPS-BoldMT"
-        titleLabel.fontSize = 50
-        titleLabel.fontColor = .brown
+        titleLabel.fontSize = 35
+        titleLabel.fontColor = .white
         titleLabel.position = CGPoint(x: size.width / 2, y: size.height / 2 + 100)
         addChild(titleLabel)
 
+        // Create the subtitle
+        let subtitleLabel = SKLabelNode(text: "chase the money")
+        subtitleLabel.fontName = "CourierNewPS-BoldMT"
+        subtitleLabel.fontSize = 20
+        subtitleLabel.fontColor = .green
+        subtitleLabel.position = CGPoint(x: size.width / 2, y: size.height / 2 + 80)
+        addChild(subtitleLabel)
+
         // Create the Play button
-        let playButton = createButton(withText: "Play", name: "playButton", position: CGPoint(x: size.width / 2, y: size.height / 2))
+        let playButton = createButton(withText: "play", name: "playButton", position: CGPoint(x: size.width / 2, y: size.height / 2))
         addChild(playButton)
 
         // Create the About button
-        let aboutButton = createButton(withText: "About", name: "aboutButton", position: CGPoint(x: size.width / 2, y: size.height / 2 - 60))
+        let aboutButton = createButton(withText: "about", name: "aboutButton", position: CGPoint(x: size.width / 2, y: size.height / 2 - 60))
         addChild(aboutButton)
 
         // Create the High Scores button
-        let highScoresButton = createButton(withText: "High Scores", name: "highScoresButton", position: CGPoint(x: size.width / 2, y: size.height / 2 - 120))
+        let highScoresButton = createButton(withText: "high scores", name: "highScoresButton", position: CGPoint(x: size.width / 2, y: size.height / 2 - 120))
         addChild(highScoresButton)
     }
 
     private func createButton(withText text: String, name: String, position: CGPoint) -> SKLabelNode {
         let button = SKLabelNode(text: text)
         button.fontName = "CourierNewPS-BoldMT"
-        button.fontSize = 40
-        button.fontColor = .blue
+        button.fontSize = 20
+        button.fontColor = .darkGray
         button.position = position
         button.name = name
         return button
@@ -52,13 +60,17 @@ class MainMenuScene: SKScene {
             if node.name == "playButton" {
                 view?.presentScene(GameScene(gameCenterManager: GameCenterManager()), transition: .flipHorizontal(withDuration: 0.5))
             } else if node.name == "aboutButton" {
-                showAlert(withTitle: "About", message: "This is a fun game where you chase emojis!")
+                showAlert(withTitle: "about", message: "a friendly reminder to chase a check. $happybirthdaymyles for continued support. visit ysdwysd.com for more. thank you.")
             } else if node.name == "highScoresButton" {
-                showAlert(withTitle: "High Scores", message: "High scores will be available here.")
+
+
+                if (view?.window?.rootViewController) != nil {
+                    GameCenterManager.shared.showLeaderboard(for: "002")
+                }
             }
         }
     }
-
+    
     private func showAlert(withTitle title: String, message: String) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))

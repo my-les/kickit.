@@ -3,9 +3,13 @@ import SwiftUI
 
 class GameCenterManager: NSObject, ObservableObject, GKGameCenterControllerDelegate {
 
+    static let shared = GameCenterManager()
+
     @Published var isAuthenticated = false
     @Published var leaderboards: [GKLeaderboard] = []
     @Published var leaderboardEntries: [GKLeaderboard.Entry] = []
+
+
 
     override init() {
         super.init()
