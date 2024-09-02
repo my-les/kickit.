@@ -9,6 +9,10 @@
 /* Begin PBXBuildFile section */
 		3133F4AB2C841E4800F7B9CF /* HighscoreScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3133F4AA2C841E4800F7B9CF /* HighscoreScene.swift */; };
 		31351A1B2C6AB4EF006B0936 /* MainMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31351A1A2C6AB4EF006B0936 /* MainMenu.swift */; };
+		315D3E582C85B8BF00463A8F /* splash.gif in Resources */ = {isa = PBXBuildFile; fileRef = 315D3E572C85B8BF00463A8F /* splash.gif */; };
+		315D3E5A2C85B90100463A8F /* SplashScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 315D3E592C85B90100463A8F /* SplashScreen.swift */; };
+		315D3E5C2C85B96900463A8F /* Gif+UIImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 315D3E5B2C85B96900463A8F /* Gif+UIImage.swift */; };
+		315D3E5E2C863BD200463A8F /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 315D3E5D2C863BD200463A8F /* Launch Screen.storyboard */; };
 		31858E592C4483D7008864A6 /* kickitApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31858E582C4483D7008864A6 /* kickitApp.swift */; };
 		31858E5B2C4483D7008864A6 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31858E5A2C4483D7008864A6 /* ContentView.swift */; };
 		31858E5D2C4483DB008864A6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 31858E5C2C4483DB008864A6 /* Assets.xcassets */; };
@@ -22,6 +26,10 @@
 /* Begin PBXFileReference section */
 		3133F4AA2C841E4800F7B9CF /* HighscoreScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HighscoreScene.swift; sourceTree = "<group>"; };
 		31351A1A2C6AB4EF006B0936 /* MainMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMenu.swift; sourceTree = "<group>"; };
+		315D3E572C85B8BF00463A8F /* splash.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = splash.gif; sourceTree = "<group>"; };
+		315D3E592C85B90100463A8F /* SplashScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashScreen.swift; sourceTree = "<group>"; };
+		315D3E5B2C85B96900463A8F /* Gif+UIImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Gif+UIImage.swift"; sourceTree = "<group>"; };
+		315D3E5D2C863BD200463A8F /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		31858E552C4483D7008864A6 /* kickit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = kickit.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		31858E582C4483D7008864A6 /* kickitApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = kickitApp.swift; sourceTree = "<group>"; };
 		31858E5A2C4483D7008864A6 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -65,15 +73,19 @@
 			isa = PBXGroup;
 			children = (
 				31A27C292C642E4C00448DB9 /* kickit.entitlements */,
+				315D3E592C85B90100463A8F /* SplashScreen.swift */,
 				31858E582C4483D7008864A6 /* kickitApp.swift */,
 				31351A1A2C6AB4EF006B0936 /* MainMenu.swift */,
 				31858E5A2C4483D7008864A6 /* ContentView.swift */,
+				315D3E5D2C863BD200463A8F /* Launch Screen.storyboard */,
 				31858E6C2C466135008864A6 /* Hashable.swift */,
 				31A27C2A2C64319900448DB9 /* GameCenterManager.swift */,
 				31858E6A2C465755008864A6 /* GameScene.swift */,
 				3133F4AA2C841E4800F7B9CF /* HighscoreScene.swift */,
+				315D3E5B2C85B96900463A8F /* Gif+UIImage.swift */,
 				31858E5C2C4483DB008864A6 /* Assets.xcassets */,
 				318B6E212C58282700935D23 /* backgroundMusic.mp3 */,
+				315D3E572C85B8BF00463A8F /* splash.gif */,
 				31858E5E2C4483DB008864A6 /* Preview Content */,
 			);
 			path = kickit;
@@ -146,7 +158,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				31858E602C4483DB008864A6 /* Preview Assets.xcassets in Resources */,
+				315D3E582C85B8BF00463A8F /* splash.gif in Resources */,
 				31858E5D2C4483DB008864A6 /* Assets.xcassets in Resources */,
+				315D3E5E2C863BD200463A8F /* Launch Screen.storyboard in Resources */,
 				318B6E222C58282800935D23 /* backgroundMusic.mp3 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -158,6 +172,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				315D3E5C2C85B96900463A8F /* Gif+UIImage.swift in Sources */,
+				315D3E5A2C85B90100463A8F /* SplashScreen.swift in Sources */,
 				31A27C2B2C64319900448DB9 /* GameCenterManager.swift in Sources */,
 				31351A1B2C6AB4EF006B0936 /* MainMenu.swift in Sources */,
 				31858E5B2C4483D7008864A6 /* ContentView.swift in Sources */,
@@ -305,6 +321,7 @@
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = "Launch Screen.storyboard";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -335,6 +352,7 @@
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = "Launch Screen.storyboard";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				LD_RUNPATH_SEARCH_PATHS = (
