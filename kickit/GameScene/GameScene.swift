@@ -17,7 +17,9 @@ class GameScene: SKScene {
     private let radius: CGFloat = 10
     private let playerAnimationDuration = 0.3
     private let enemySpeed: CGFloat = 10 // points per second
-
+    private var lives = 3
+    private var heartNodes: [SKSpriteNode] = []
+    private var isInvincible = false
     private var player: SKLabelNode!
     private var enemies: [SKLabelNode] = []
     private var gameState: GameState = .ready
@@ -37,7 +39,7 @@ class GameScene: SKScene {
     private var bestScoreLabel: SKLabelNode!
 
     private var gameCenterManager: GameCenterManager?
-    
+
     // Initialize with GameCenterManager
     init(gameCenterManager: GameCenterManager) {
         self.gameCenterManager = gameCenterManager
@@ -91,6 +93,17 @@ class GameScene: SKScene {
         addChild(player)
     }
 
+    private func setupHearts() {
+        for i in 0..<3 {
+            let heart = SKSpriteNode(imageNamed: "heart")
+            heart.position = CGPoint(x: 20 + (i * 20), y: Int(self.size.height) - 75)
+            heart.size = CGSize(width: 12, height: 12)
+            heart.zPosition = 100
+            addChild(heart)
+            heartNodes.append(heart)
+        }
+    }
+
     private func setupLabels() {
         clockLabel = SKLabelNode(text: "00:00.000")
         clockLabel.position = CGPoint(x: size.width / 2, y: size.height - 75)
@@ -122,6 +135,8 @@ class GameScene: SKScene {
         score = 0
         scoreLabel.text = "Score: 0"
         tapToStartLabel.isHidden = false
+        setupHearts()
+
 
         for enemy in enemies {
             enemy.removeFromParent()
@@ -137,6 +152,7 @@ class GameScene: SKScene {
         elapsedTime = 0
         tapToStartLabel.isHidden = true
 
+
         let generateEnemyAction = SKAction.run { [weak self] in
             self?.generateEnemy()
         }
@@ -147,33 +163,33 @@ class GameScene: SKScene {
     }
 
     private func gameOver() {
-            gameState = .gameOver
-            removeAction(forKey: "enemyGenerator")
+        gameState = .gameOver
+        removeAction(forKey: "enemyGenerator")
 
-            let formattedElapsedTime = format(timeInterval: elapsedTime)
-            let currentBestTime = UserDefaults.standard.string(forKey: "bestTime") ?? "99:99.999"
+        let formattedElapsedTime = format(timeInterval: elapsedTime)
+        let currentBestTime = UserDefaults.standard.string(forKey: "bestTime") ?? "99:99.999"
 
-            if formattedElapsedTime > currentBestTime {
-                UserDefaults.standard.set(formattedElapsedTime, forKey: "bestTime")
-                bestTimeLabel?.text = "Best Time: \(formattedElapsedTime)"
-            }
-
-            let currentBestScore = UserDefaults.standard.integer(forKey: "bestScore")
-            if score > currentBestScore {
-                UserDefaults.standard.set(score, forKey: "bestScore")
-                bestScoreLabel?.text = "Best Score: \(score)"
-
-                // Report score to Game Center
-                if gameCenterManager?.isAuthenticated == true {
-                    reportScoreToGameCenter(score)
-                }
-            }
-
-            showAlert()
-            showShareSheet(with: score) // Show the share sheet after the game over alert
-
-            prepareGame()
+        if formattedElapsedTime > currentBestTime {
+            UserDefaults.standard.set(formattedElapsedTime, forKey: "bestTime")
+            bestTimeLabel?.text = "Best Time: \(formattedElapsedTime)"
         }
+
+        let currentBestScore = UserDefaults.standard.integer(forKey: "bestScore")
+        if score > currentBestScore {
+            UserDefaults.standard.set(score, forKey: "bestScore")
+            bestScoreLabel?.text = "Best Score: \(score)"
+
+            // Report score to Game Center
+            if gameCenterManager?.isAuthenticated == true {
+                reportScoreToGameCenter(score)
+            }
+        }
+
+        showAlert()
+        showShareSheet(with: score) // Show the share sheet after the game over alert
+
+        prepareGame()
+    }
 
     private func reportScoreToGameCenter(_ score: Int) {
         guard let gameCenterManager = gameCenterManager, gameCenterManager.isAuthenticated else { return }
@@ -310,13 +326,20 @@ class GameScene: SKScene {
                     updateScoreForDollarBill()
                     showCash(at: enemy.position)
                     triggerWinningHaptic()
+                    playMoneySound()
                     enemy.removeFromParent()
                     enemies.remove(at: i)
                     continue
                 } else {
                     showCrash(at: player.position)
                     triggerHaptic()
-                    gameOver()
+                    //gameOver()
+                    playCollisionSound()
+                    enemy.removeFromParent()
+                    enemies.remove(at: i)
+                    if !isInvincible {
+                        loseLife()
+                    }
                     return
                 }
             }
@@ -339,6 +362,55 @@ class GameScene: SKScene {
             enemies[index].removeFromParent()
             enemies.remove(at: index)
         }
+
+        //        func loseLife() {
+        //             if lives > 0 {
+        //                 lives -= 1
+        //                 let heartToRemove = heartNodes[lives]
+        //                 heartToRemove.removeFromParent()
+        //                 heartNodes.remove(at: lives)
+        //
+        //                 if lives == 0 {
+        //                     gameOver()
+        //                 }
+        //             }
+        //        }
+
+        func loseLife() {
+            if lives > 0 {
+                lives -= 1
+                let heartToRemove = heartNodes[lives]
+                heartToRemove.removeFromParent()
+                heartNodes.remove(at: lives)
+
+                if lives > 0 {
+                    triggerInvincibility()
+                } else {
+                    gameOver()
+                    lives = 3
+                }
+            }
+        }
+
+        func triggerInvincibility() {
+            isInvincible = true
+            let waitAction = SKAction.wait(forDuration: 1.0) // 1 second invincibility
+            let resetInvincibilityAction = SKAction.run { [weak self] in
+                self?.isInvincible = false
+            }
+            let sequence = SKAction.sequence([waitAction, resetInvincibilityAction])
+            run(sequence)
+        }
+    }
+
+    private func playCollisionSound() {
+        let soundAction = SKAction.playSoundFileNamed("opp.mp3", waitForCompletion: false)
+        self.run(soundAction)
+    }
+
+    private func playMoneySound() {
+        let soundAction = SKAction.playSoundFileNamed("money.mp3", waitForCompletion: false)
+        self.run(soundAction)
     }
 
     private func updateScoreForDollarBill() {
@@ -359,7 +431,7 @@ class GameScene: SKScene {
     private func showCash(at position: CGPoint) {
         let cashLabel = SKLabelNode(text: "💰")
         cashLabel.position = position
-        cashLabel.fontSize = 40
+        cashLabel.fontSize = 35
         cashLabel.zPosition = 1
         addChild(cashLabel)
 
@@ -372,7 +444,7 @@ class GameScene: SKScene {
     private func showCrash(at position: CGPoint) {
         let crashLabel = SKLabelNode(text: "💥")
         crashLabel.position = position
-        crashLabel.fontSize = 40
+        crashLabel.fontSize = 35
         crashLabel.zPosition = 1
         addChild(crashLabel)
 

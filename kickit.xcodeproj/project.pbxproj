@@ -21,6 +21,8 @@
 		31858E6D2C466136008864A6 /* Hashable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31858E6C2C466135008864A6 /* Hashable.swift */; };
 		318B6E222C58282800935D23 /* backgroundMusic.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 318B6E212C58282700935D23 /* backgroundMusic.mp3 */; };
 		31A27C2B2C64319900448DB9 /* GameCenterManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31A27C2A2C64319900448DB9 /* GameCenterManager.swift */; };
+		31AC8B122C89465B005B4BB3 /* money.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 31AC8B112C89465B005B4BB3 /* money.mp3 */; };
+		31AC8B142C8946C4005B4BB3 /* opp.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 31AC8B132C8946C4005B4BB3 /* opp.mp3 */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -40,6 +42,8 @@
 		318B6E212C58282700935D23 /* backgroundMusic.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = backgroundMusic.mp3; sourceTree = "<group>"; };
 		31A27C292C642E4C00448DB9 /* kickit.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = kickit.entitlements; sourceTree = "<group>"; };
 		31A27C2A2C64319900448DB9 /* GameCenterManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameCenterManager.swift; sourceTree = "<group>"; };
+		31AC8B112C89465B005B4BB3 /* money.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = money.mp3; sourceTree = "<group>"; };
+		31AC8B132C8946C4005B4BB3 /* opp.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = opp.mp3; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -86,6 +90,8 @@
 				31858E5C2C4483DB008864A6 /* Assets.xcassets */,
 				318B6E212C58282700935D23 /* backgroundMusic.mp3 */,
 				315D3E572C85B8BF00463A8F /* splash.gif */,
+				31AC8B112C89465B005B4BB3 /* money.mp3 */,
+				31AC8B132C8946C4005B4BB3 /* opp.mp3 */,
 				31858E5E2C4483DB008864A6 /* Preview Content */,
 			);
 			path = kickit;
@@ -157,8 +163,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				31AC8B122C89465B005B4BB3 /* money.mp3 in Resources */,
 				31858E602C4483DB008864A6 /* Preview Assets.xcassets in Resources */,
 				315D3E582C85B8BF00463A8F /* splash.gif in Resources */,
+				31AC8B142C8946C4005B4BB3 /* opp.mp3 in Resources */,
 				31858E5D2C4483DB008864A6 /* Assets.xcassets in Resources */,
 				315D3E5E2C863BD200463A8F /* Launch Screen.storyboard in Resources */,
 				318B6E222C58282800935D23 /* backgroundMusic.mp3 in Resources */,
@@ -313,7 +321,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = kickit/kickit.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 222;
 				DEVELOPMENT_ASSET_PATHS = "\"kickit/Preview Content\"";
 				DEVELOPMENT_TEAM = 7PJNZT4YR2;
 				ENABLE_PREVIEWS = YES;
@@ -344,7 +352,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = kickit/kickit.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 222;
 				DEVELOPMENT_ASSET_PATHS = "\"kickit/Preview Content\"";
 				DEVELOPMENT_TEAM = 7PJNZT4YR2;
 				ENABLE_PREVIEWS = YES;
