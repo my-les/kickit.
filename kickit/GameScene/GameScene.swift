@@ -16,7 +16,12 @@ class GameScene: SKScene {
 
     private let radius: CGFloat = 10
     private let playerAnimationDuration = 0.3
-    private let enemySpeed: CGFloat = 10 // points per second
+    private let enemySpeed: CGFloat = 5 // points per second
+
+    private var level: Int = 1
+    private var enemiesPerLevel: Int = 1
+    private let levelThreshold: Int = 10
+
     private var lives = 3
     private var heartNodes: [SKSpriteNode] = []
     private var isInvincible = false
@@ -38,7 +43,14 @@ class GameScene: SKScene {
     private var bestScore: Int = 0
     private var bestScoreLabel: SKLabelNode!
 
-    private var gameCenterManager: GameCenterManager?
+    private weak var gameCenterManager: GameCenterManager?
+
+    private var levelLabel: SKLabelNode!
+
+    private let baseEnemySpeed: CGFloat = 5
+    private let maxEnemySpeed: CGFloat = 8
+    private let baseSpawnInterval: TimeInterval = 3.0
+    private let minSpawnInterval: TimeInterval = 1.0
 
     // Initialize with GameCenterManager
     init(gameCenterManager: GameCenterManager) {
@@ -54,6 +66,7 @@ class GameScene: SKScene {
         backgroundColor = .black
         setupPlayer()
         setupLabels()
+        updateLevel()
         prepareGame()
         playBackgroundMusic()
 
@@ -83,6 +96,9 @@ class GameScene: SKScene {
             elapsedTime = currentTime - startTime
             clockLabel.text = format(timeInterval: elapsedTime)
             checkCollisions()
+            if score >= level * levelThreshold {
+                increaseLevel()
+            }
         }
     }
 
@@ -91,6 +107,31 @@ class GameScene: SKScene {
         player.fontSize = 18
         player.position = CGPoint(x: size.width / 2, y: size.height / 2)
         addChild(player)
+    }
+
+    private func increaseLevel() {
+        level += 1
+        enemiesPerLevel += 1
+        updateLevel()
+        print("Level \(level) started. More enemies incoming lil bitch!")
+    }
+
+    private func updateLevel() {
+        // Update enemy generation rate or speed based on level
+        removeAction(forKey: "enemyGenerator")
+
+        let generateEnemyAction = SKAction.run { [weak self] in
+            self?.generateEnemies(for: self?.level ?? 1)
+        }
+        let waitAction = SKAction.wait(forDuration: max(0.8 - 0.1 * Double(level), minSpawnInterval)) // Cap minimum spawn interval
+        let sequenceAction = SKAction.sequence([generateEnemyAction, waitAction])
+        let repeatAction = SKAction.repeatForever(sequenceAction)
+        run(repeatAction, withKey: "enemyGenerator")
+
+        updateGameSpeedAndSpawnRate(for: level)
+
+        // Update the level label
+        levelLabel.text = "Level: \(level)"
     }
 
     private func setupHearts() {
@@ -125,6 +166,14 @@ class GameScene: SKScene {
         tapToStartLabel.fontColor = .white
         tapToStartLabel.fontSize = 19
         addChild(tapToStartLabel)
+
+        levelLabel = SKLabelNode(text: "Level: 1")
+        levelLabel.position = CGPoint(x: size.width - 20, y: size.height - 75)
+        levelLabel.fontName = "CourierNewPS-BoldMT"
+        levelLabel.fontSize = 14  // Smaller than the score label
+        levelLabel.fontColor = .white
+        levelLabel.horizontalAlignmentMode = .right
+        addChild(levelLabel)
     }
 
     private func prepareGame() {
@@ -137,11 +186,18 @@ class GameScene: SKScene {
         tapToStartLabel.isHidden = false
         setupHearts()
 
+        level = 1
+        levelLabel.text = "Level: 1"
+        enemiesPerLevel = 1  // Reset enemiesPerLevel
 
+        // Remove all existing enemies
         for enemy in enemies {
             enemy.removeFromParent()
         }
         enemies.removeAll()
+
+        // Remove any existing enemy generator action
+        removeAction(forKey: "enemyGenerator")
 
         player.position = CGPoint(x: size.width / 2, y: size.height / 2)
     }
@@ -152,14 +208,20 @@ class GameScene: SKScene {
         elapsedTime = 0
         tapToStartLabel.isHidden = true
 
+        // Remove any existing enemy generator action
+        removeAction(forKey: "enemyGenerator")
 
+        // Set up the initial enemy generator with appropriate timing
         let generateEnemyAction = SKAction.run { [weak self] in
-            self?.generateEnemy()
+            self?.generateEnemies(for: self?.level ?? 1)
         }
-        let waitAction = SKAction.wait(forDuration: 1.0)
+        let waitAction = SKAction.wait(forDuration: 3.0)
         let sequenceAction = SKAction.sequence([generateEnemyAction, waitAction])
         let repeatAction = SKAction.repeatForever(sequenceAction)
         run(repeatAction, withKey: "enemyGenerator")
+
+        // Update game speed and spawn rate for the initial level
+        updateGameSpeedAndSpawnRate(for: level)
     }
 
     private func gameOver() {
@@ -206,7 +268,7 @@ class GameScene: SKScene {
     private func showAlert() {
         if let viewController = self.view?.window?.rootViewController {
             let alert = UIAlertController(
-                title: "Crashed Out",
+                title: "Crashed Out 😪",
                 message: "Your score: \(score)\nBest score: \(UserDefaults.standard.integer(forKey: "bestScore"))\nTime: \(format(timeInterval: elapsedTime))",
                 preferredStyle: .alert
             )
@@ -217,8 +279,8 @@ class GameScene: SKScene {
 
             let shareScore = score  // Capture the score value at this point
             let shareAction = UIAlertAction(title: "Share Score", style: .default) { _ in
-                let gameLink = "https://apps.apple.com/us/app/your-game-id"  // Replace with your game's App Store link
-                let textToShare = "I just scored \(shareScore) points in the game! Can you beat that? Check out the game here: \(gameLink)"
+                let gameLink = "https://apps.apple.com/app/kickit/id1254777556"  // Replace with your game's App Store link
+                let textToShare = "I just scored \(shareScore) points in the game slim! Can you beat that? Check out the game here: \(gameLink)"
                 let activityViewController = UIActivityViewController(activityItems: [textToShare], applicationActivities: nil)
                 viewController.present(activityViewController, animated: true, completion: nil)
             }
@@ -241,43 +303,52 @@ class GameScene: SKScene {
         }
     }
 
-    private func generateEnemy() {
-        let screenEdge = ScreenEdge(rawValue: Int(arc4random_uniform(4)))!
-        var position: CGPoint = .zero
+    private func generateEnemies(for level: Int) {
+        let enemyTypes = getEnemyEmojis(for: level)
+        // add cash aspect
 
-        switch screenEdge {
-        case .left:
-            position = CGPoint(x: 0, y: CGFloat(arc4random_uniform(UInt32(size.height))))
-        case .right:
-            position = CGPoint(x: size.width, y: CGFloat(arc4random_uniform(UInt32(size.height))))
-        case .top:
-            position = CGPoint(x: CGFloat(arc4random_uniform(UInt32(size.width))), y: size.height)
-        case .bottom:
-            position = CGPoint(x: CGFloat(arc4random_uniform(UInt32(size.width))), y: 0)
+        for _ in 0..<enemiesPerLevel {
+            let screenEdge = ScreenEdge(rawValue: Int.random(in: 0...3))!
+            var position: CGPoint = .zero
+
+            switch screenEdge {
+            case .left:
+                position = CGPoint(x: 0, y: CGFloat.random(in: 0...size.height))
+            case .right:
+                position = CGPoint(x: size.width, y: CGFloat.random(in: 0...size.height))
+            case .top:
+                position = CGPoint(x: CGFloat.random(in: 0...size.width), y: size.height)
+            case .bottom:
+                position = CGPoint(x: CGFloat.random(in: 0...size.width), y: 0)
+            }
+
+            let randomIndex = Int.random(in: 0..<enemyTypes.count)
+            let emojiNode = SKLabelNode(text: enemyTypes[randomIndex])
+            emojiNode.fontSize = 14
+            emojiNode.position = position
+            addChild(emojiNode)
+
+            let duration = getEnemyDuration(enemy: emojiNode)
+            let moveAction = SKAction.move(to: player.position, duration: duration)
+            emojiNode.run(moveAction)
+
+            enemies.append(emojiNode)
         }
+    }
 
-        let isDollarBill = arc4random_uniform(6) == 0 // Approx. 1 in 6 chance for dollar bill emoji
-        let emojiNode: SKLabelNode
-
-        if isDollarBill {
-            emojiNode = SKLabelNode(text: "💵") // Dollar bill emoji
-            emojiNode.fontSize = 18
-        } else {
-            // Randomly select an enemy emoji
-            let enemyEmojis = ["🍟", "🍸", "📱", "🥡", "🚔"]
-            let randomIndex = Int(arc4random_uniform(UInt32(enemyEmojis.count)))
-            emojiNode = SKLabelNode(text: enemyEmojis[randomIndex])
+    private func getEnemyEmojis(for level: Int) -> [String] {
+        switch level {
+        case 1...2:
+            return ["🦟", "💵"] // Basic enemies
+        case 3...5:
+            return ["🍟", "💵", "🍔"] // Introduce more difficult enemies gradually
+        case 6...9:
+            return ["📱", "💵", "💔", "🍸"] // Add another enemy type
+        case 10...:
+            return ["🦟", "💵", "🥡", "🍸", "📱"] // Full set of enemies
+        default:
+            return ["🍟", "💵"] // Fallback to basic enemies
         }
-
-        emojiNode.fontSize = 20
-        emojiNode.position = position
-        addChild(emojiNode)
-
-        let duration = getEnemyDuration(enemy: emojiNode)
-        let moveAction = SKAction.move(to: player.position, duration: duration)
-        emojiNode.run(moveAction)
-
-        enemies.append(emojiNode)
     }
 
     private func getEnemyDuration(enemy: SKNode) -> TimeInterval {
@@ -299,12 +370,6 @@ class GameScene: SKScene {
         }
     }
 
-    private func getEnemyDuration(enemy: SKShapeNode) -> TimeInterval {
-        let dx = player.position.x - enemy.position.x
-        let dy = player.position.y - enemy.position.y
-        return TimeInterval(sqrt(dx * dx + dy * dy) / enemySpeed)
-    }
-
     private func format(timeInterval: TimeInterval) -> String {
         let interval = Int(timeInterval)
         let seconds = interval % 60
@@ -313,13 +378,10 @@ class GameScene: SKScene {
         return String(format: "%02d:%02d.%03d", minutes, seconds, milliseconds)
     }
 
-
     private func checkCollisions() {
-        var indicesToRemove: [Int] = []
+        var enemiesToRemove: [SKLabelNode] = []
 
-        for i in (0..<enemies.count).reversed() {
-            let enemy = enemies[i]
-
+        for enemy in enemies {
             // Check collision with player
             if player.frame.intersects(enemy.frame) {
                 if enemy.text == "💵" { // Dollar bill emoji
@@ -327,80 +389,65 @@ class GameScene: SKScene {
                     showCash(at: enemy.position)
                     triggerWinningHaptic()
                     playMoneySound()
-                    enemy.removeFromParent()
-                    enemies.remove(at: i)
-                    continue
+                    enemiesToRemove.append(enemy)
                 } else {
                     showCrash(at: player.position)
                     triggerHaptic()
-                    //gameOver()
                     playCollisionSound()
-                    enemy.removeFromParent()
-                    enemies.remove(at: i)
+                    enemiesToRemove.append(enemy)
                     if !isInvincible {
                         loseLife()
                     }
-                    return
+                    break
                 }
             }
 
             // Check collision between enemies
-            for j in (0..<i).reversed() where enemies[i].frame.intersects(enemies[j].frame) {
-                if enemies[i].text == enemies[j].text {
+            for otherEnemy in enemies where enemy != otherEnemy && enemy.frame.intersects(otherEnemy.frame) {
+                if enemy.text == otherEnemy.text {
                     updateScore()
-                    showCash(at: enemies[i].position)
+                    showCash(at: enemy.position)
                     triggerWinningHaptic()
-                    indicesToRemove.append(i)
-                    indicesToRemove.append(j)
+                    enemiesToRemove.append(enemy)
+                    enemiesToRemove.append(otherEnemy)
                     break
                 }
             }
         }
 
         // Remove collided enemies
-        for index in indicesToRemove.sorted().reversed() {
-            enemies[index].removeFromParent()
-            enemies.remove(at: index)
+        for enemy in enemiesToRemove {
+            enemy.removeFromParent()
+            if let index = enemies.firstIndex(of: enemy) {
+                enemies.remove(at: index)
+            }
         }
+    }
 
-        //        func loseLife() {
-        //             if lives > 0 {
-        //                 lives -= 1
-        //                 let heartToRemove = heartNodes[lives]
-        //                 heartToRemove.removeFromParent()
-        //                 heartNodes.remove(at: lives)
-        //
-        //                 if lives == 0 {
-        //                     gameOver()
-        //                 }
-        //             }
-        //        }
+    private func loseLife() {
+        if lives > 0 {
+            lives -= 1
+            let heartToRemove = heartNodes[lives]
+            heartToRemove.removeFromParent()
+            heartNodes.remove(at: lives)
 
-        func loseLife() {
             if lives > 0 {
-                lives -= 1
-                let heartToRemove = heartNodes[lives]
-                heartToRemove.removeFromParent()
-                heartNodes.remove(at: lives)
-
-                if lives > 0 {
-                    triggerInvincibility()
-                } else {
-                    gameOver()
-                    lives = 3
-                }
+                triggerInvincibility()
+            } else {
+                gameOver()
+                lives = 3
             }
         }
+    }
 
-        func triggerInvincibility() {
-            isInvincible = true
-            let waitAction = SKAction.wait(forDuration: 1.0) // 1 second invincibility
-            let resetInvincibilityAction = SKAction.run { [weak self] in
-                self?.isInvincible = false
-            }
-            let sequence = SKAction.sequence([waitAction, resetInvincibilityAction])
-            run(sequence)
+    private func triggerInvincibility() {
+        isInvincible = true
+        let waitAction = SKAction.wait(forDuration: 1.0) // 1 second invincibility
+        let resetInvincibilityAction = SKAction.run { [weak self] in
+            self?.isInvincible = false
         }
+        let sequence = SKAction.sequence([waitAction, resetInvincibilityAction])
+        run(sequence)
     }
 
     private func playCollisionSound() {
@@ -469,5 +516,59 @@ class GameScene: SKScene {
                 print("Could not load background music: \(error)")
             }
         }
+    }
+
+    private func updateGameSpeedAndSpawnRate(for level: Int) {
+        // Calculate speed multiplier with a more gradual increase
+        let speedMultiplier = min(1 + (CGFloat(level) * 0.05), maxEnemySpeed / baseEnemySpeed)
+        
+        // Calculate spawn interval with a more gradual decrease
+        let spawnInterval = max(baseSpawnInterval - (TimeInterval(level) * 0.05), minSpawnInterval)
+        
+        // Adjust enemy speed based on the calculated speed multiplier
+        adjustEnemySpeed(to: baseEnemySpeed * speedMultiplier)
+        
+        // Adjust enemy spawn rate (frequency) based on the calculated spawn interval
+        adjustEnemySpawnRate(to: spawnInterval)
+        
+        // Adjust enemies per level
+        enemiesPerLevel = min(1 + (level / 5), 4) // Cap at 4 enemies per spawn, increase every 5 levels
+    }
+
+    // Function to adjust enemy speed
+    private func adjustEnemySpeed(to speed: CGFloat) {
+        for enemy in enemies {
+            enemy.speed = speed
+        }
+    }
+
+    // Function to adjust the enemy spawn rate
+    private func adjustEnemySpawnRate(to interval: TimeInterval) {
+        removeAction(forKey: "enemyGenerator")
+        
+        let generateEnemyAction = SKAction.run { [weak self] in
+            self?.generateEnemies(for: self?.level ?? 1)
+        }
+        let waitAction = SKAction.wait(forDuration: interval)
+        let sequenceAction = SKAction.sequence([generateEnemyAction, waitAction])
+        let repeatAction = SKAction.repeatForever(sequenceAction)
+        run(repeatAction, withKey: "enemyGenerator")
+    }
+
+    // Use a more efficient way to remove enemies
+    private func removeEnemy(_ enemy: SKLabelNode) {
+        enemy.removeFromParent()
+        if let index = enemies.firstIndex(of: enemy) {
+            enemies.remove(at: index)
+        }
+    }
+
+    // Properly clean up resources in deinit
+    deinit {
+        print("GameScene is being deinitialized")
+        removeAllActions()
+        removeAllChildren()
+        backgroundMusicPlayer?.stop()
+        backgroundMusicPlayer = nil
     }
 }

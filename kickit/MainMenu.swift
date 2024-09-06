@@ -60,7 +60,27 @@ class MainMenuScene: SKScene {
             if node.name == "playButton" {
                 view?.presentScene(GameScene(gameCenterManager: GameCenterManager()), transition: .flipHorizontal(withDuration: 0.5))
             } else if node.name == "aboutButton" {
-                showAlert(withTitle: "about", message: "a friendly reminder to chase a check. $happybirthdaymyles for continued support. visit ysdwysd.com for more. thank you.")
+                showAlert(withTitle: "about", message:
+                """
+                    thank you for your support.
+
+                this game is a friendly reminder to chase a check and avoid distractions :)
+
+                1) tap where you want to go on screen...
+
+                2) kick it from the opps
+
+                3) get the munyun...
+
+                hint: try to get the opps to collide.
+
+                oh & $happybirthdaymyles if you wanna buy me coffee lol
+
+                developed by @visionsofbillions
+
+                bro @jptrsick produced the music
+                """
+                )
             } else if node.name == "highScoresButton" {
 
 
