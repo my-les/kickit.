@@ -339,12 +339,12 @@ class GameScene: SKScene {
     private func getEnemyEmojis(for level: Int) -> [String] {
         switch level {
         case 1...2:
-            return ["🦟", "💵"] // Basic enemies
+            return ["🚔", "💵"] // Basic enemies
         case 3...5:
             return ["🍟", "💵", "🍔"] // Introduce more difficult enemies gradually
-        case 6...9:
+        case 6...8:
             return ["📱", "💵", "💔", "🍸"] // Add another enemy type
-        case 10...:
+        case 9...:
             return ["🦟", "💵", "🥡", "🍸", "📱"] // Full set of enemies
         default:
             return ["🍟", "💵"] // Fallback to basic enemies
