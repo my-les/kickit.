@@ -46,6 +46,8 @@ class GameScene: SKScene {
     private weak var gameCenterManager: GameCenterManager?
 
     private var levelLabel: SKLabelNode!
+    private var pauseButton: SKSpriteNode!
+    private var isGamePaused: Bool = false
 
     private let baseEnemySpeed: CGFloat = 5
     private let maxEnemySpeed: CGFloat = 8
@@ -69,6 +71,7 @@ class GameScene: SKScene {
         updateLevel()
         prepareGame()
         playBackgroundMusic()
+        setupPauseButton()
 
         bestScore = UserDefaults.standard.integer(forKey: "bestScore")
     }
@@ -77,19 +80,25 @@ class GameScene: SKScene {
         guard let touch = touches.first else { return }
         let location = touch.location(in: self)
 
-        switch gameState {
-        case .ready:
-            startGame()
-        case .playing:
-            movePlayer(to: location)
-            moveEnemies(to: location)
-        case .gameOver:
-            break
+        if pauseButton.contains(location) {
+            togglePauseGame()
+        } else {
+            switch gameState {
+            case .ready:
+                startGame()
+            case .playing:
+                if !isGamePaused {
+                    movePlayer(to: location)
+                    moveEnemies(to: location)
+                }
+            case .gameOver:
+                break
+            }
         }
     }
 
     override func update(_ currentTime: TimeInterval) {
-        if gameState == .playing {
+        if gameState == .playing && !isGamePaused {
             if startTime == 0 {
                 startTime = currentTime
             }
@@ -224,6 +233,47 @@ class GameScene: SKScene {
         updateGameSpeedAndSpawnRate(for: level)
     }
 
+        // Implement Pause Button
+    private func setupPauseButton() {
+        pauseButton = SKSpriteNode(imageNamed: "nodiddy")
+        pauseButton.size = CGSize(width: 30, height: 30)
+        pauseButton.position = CGPoint(x: size.width / 8, y: size.height / 8.5)
+        pauseButton.zPosition = 100
+        addChild(pauseButton)
+    }
+
+    private func togglePauseGame() {
+        isGamePaused = !isGamePaused
+
+        if isGamePaused {
+            pauseGame()
+        } else {
+            resumeGame()
+        }
+    }
+
+    private func pauseGame() {
+        pauseButton.texture = SKTexture(imageNamed: "diddy")
+        self.isPaused = true
+
+        let pausedLabel = SKLabelNode(text: "PAUSED")
+        pausedLabel.fontName = "CourierNewPS-BoldMT"
+        pausedLabel.fontSize = 40
+        pausedLabel.position = CGPoint(x: size.width / 2, y: size.height / 2)
+        pausedLabel.zPosition = 100
+        pausedLabel.name = "pausedLabel"
+        addChild(pausedLabel)
+    }
+
+    private func resumeGame() {
+        pauseButton.texture = SKTexture(imageNamed: "nodiddy")
+        self.isPaused = false
+
+        if let pausedLabel = childNode(withName: "pausedLabel") {
+            pausedLabel.removeFromParent()
+        }
+    }
+
     private func gameOver() {
         gameState = .gameOver
         removeAction(forKey: "enemyGenerator")
@@ -284,9 +334,14 @@ class GameScene: SKScene {
                 let activityViewController = UIActivityViewController(activityItems: [textToShare], applicationActivities: nil)
                 viewController.present(activityViewController, animated: true, completion: nil)
             }
+            let mainMenuAction = UIAlertAction(title: "Main Menu", style: .default) { _ in
+                self.returnToMainMenu()
+            }
+
 
             alert.addAction(restartAction)
             alert.addAction(shareAction)
+            alert.addAction(mainMenuAction)
             viewController.present(alert, animated: true, completion: nil)
         }
     }
@@ -301,6 +356,11 @@ class GameScene: SKScene {
                 viewController.present(activityViewController, animated: true, completion: nil)
             }
         }
+    }
+
+    private func returnToMainMenu() {
+        let mainMenuScene = MainMenuScene(size: view!.bounds.size)
+        view?.presentScene(mainMenuScene, transition: .flipHorizontal(withDuration: 0.5))
     }
 
     private func generateEnemies(for level: Int) {
@@ -521,16 +581,16 @@ class GameScene: SKScene {
     private func updateGameSpeedAndSpawnRate(for level: Int) {
         // Calculate speed multiplier with a more gradual increase
         let speedMultiplier = min(1 + (CGFloat(level) * 0.05), maxEnemySpeed / baseEnemySpeed)
-        
+
         // Calculate spawn interval with a more gradual decrease
         let spawnInterval = max(baseSpawnInterval - (TimeInterval(level) * 0.05), minSpawnInterval)
-        
+
         // Adjust enemy speed based on the calculated speed multiplier
         adjustEnemySpeed(to: baseEnemySpeed * speedMultiplier)
-        
+
         // Adjust enemy spawn rate (frequency) based on the calculated spawn interval
         adjustEnemySpawnRate(to: spawnInterval)
-        
+
         // Adjust enemies per level
         enemiesPerLevel = min(1 + (level / 5), 4) // Cap at 4 enemies per spawn, increase every 5 levels
     }
@@ -545,7 +605,7 @@ class GameScene: SKScene {
     // Function to adjust the enemy spawn rate
     private func adjustEnemySpawnRate(to interval: TimeInterval) {
         removeAction(forKey: "enemyGenerator")
-        
+
         let generateEnemyAction = SKAction.run { [weak self] in
             self?.generateEnemies(for: self?.level ?? 1)
         }
