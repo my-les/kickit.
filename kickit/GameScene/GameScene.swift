@@ -54,6 +54,9 @@ class GameScene: SKScene {
     private let baseSpawnInterval: TimeInterval = 3.0
     private let minSpawnInterval: TimeInterval = 1.0
 
+    private var saladPowerUp: SKLabelNode?
+    private let saladSpawnChance: Double = 0.50 // 5% chance per level
+
     // Initialize with GameCenterManager
     init(gameCenterManager: GameCenterManager) {
         self.gameCenterManager = gameCenterManager
@@ -141,6 +144,46 @@ class GameScene: SKScene {
 
         // Update the level label
         levelLabel.text = "Level: \(level)"
+
+        // Try to spawn a salad power-up
+        if Double.random(in: 0...1) < saladSpawnChance {
+            spawnSaladPowerUp()
+        }
+    }
+
+    private func spawnSaladPowerUp() {
+        // Remove existing salad power-up if any
+        saladPowerUp?.removeFromParent()
+        
+        let salad = SKLabelNode(text: "🥗")
+        salad.fontSize = 16
+        salad.position = randomPositionOutsideScreen()
+        addChild(salad)
+        saladPowerUp = salad
+
+        let moveAction = SKAction.move(to: randomPositionInsideScreen(), duration: 10)
+        let fadeOutAction = SKAction.fadeOut(withDuration: 2)
+        let removeAction = SKAction.removeFromParent()
+        let sequence = SKAction.sequence([moveAction, fadeOutAction, removeAction])
+        
+        salad.run(sequence) {
+            self.saladPowerUp = nil
+        }
+    }
+
+    private func randomPositionOutsideScreen() -> CGPoint {
+        let side = Int.random(in: 0...3)
+        switch side {
+        case 0: return CGPoint(x: CGFloat.random(in: 0...size.width), y: size.height + 50)
+        case 1: return CGPoint(x: CGFloat.random(in: 0...size.width), y: -50)
+        case 2: return CGPoint(x: -50, y: CGFloat.random(in: 0...size.height))
+        default: return CGPoint(x: size.width + 50, y: CGFloat.random(in: 0...size.height))
+        }
+    }
+
+    private func randomPositionInsideScreen() -> CGPoint {
+        return CGPoint(x: CGFloat.random(in: 50...(size.width - 50)),
+                       y: CGFloat.random(in: 50...(size.height - 50)))
     }
 
     private func setupHearts() {
@@ -256,7 +299,7 @@ class GameScene: SKScene {
         pauseButton.texture = SKTexture(imageNamed: "diddy")
         self.isPaused = true
 
-        let pausedLabel = SKLabelNode(text: "PAUSED")
+        let pausedLabel = SKLabelNode(text: "NO DIDDY")
         pausedLabel.fontName = "CourierNewPS-BoldMT"
         pausedLabel.fontSize = 40
         pausedLabel.position = CGPoint(x: size.width / 2, y: size.height / 2)
@@ -405,7 +448,7 @@ class GameScene: SKScene {
         case 6...8:
             return ["📱", "💵", "💔", "🍸"] // Add another enemy type
         case 9...:
-            return ["🦟", "💵", "🥡", "🍸", "📱"] // Full set of enemies
+            return ["💔", "💵", "🥡", "🍸", "📱"] // Full set of enemies
         default:
             return ["🍟", "💵"] // Fallback to basic enemies
         }
@@ -473,6 +516,11 @@ class GameScene: SKScene {
                     break
                 }
             }
+        }
+
+        // Check collision with salad power-up
+        if let salad = saladPowerUp, player.frame.intersects(salad.frame) {
+            collectSaladPowerUp()
         }
 
         // Remove collided enemies
@@ -621,6 +669,57 @@ class GameScene: SKScene {
         if let index = enemies.firstIndex(of: enemy) {
             enemies.remove(at: index)
         }
+    }
+
+    private func collectSaladPowerUp() {
+        saladPowerUp?.removeFromParent()
+        saladPowerUp = nil
+        
+        if lives < 3 {
+            lives += 1
+            updateHeartDisplay()
+            playSaladCollectionSound()
+            showSaladCollectionEffect()
+        }
+    }
+
+    private func updateHeartDisplay() {
+        // Remove all existing hearts
+        for heart in heartNodes {
+            heart.removeFromParent()
+        }
+        heartNodes.removeAll()
+
+        // Add hearts based on current lives
+        for i in 0..<lives {
+            let heart = SKSpriteNode(imageNamed: "heart")
+            heart.position = CGPoint(x: 20 + (i * 20), y: Int(self.size.height) - 75)
+            heart.size = CGSize(width: 12, height: 12)
+            heart.zPosition = 100
+            addChild(heart)
+            heartNodes.append(heart)
+        }
+    }
+
+    private func playSaladCollectionSound() {
+        let soundAction = SKAction.playSoundFileNamed("salad_collect.mp3", waitForCompletion: false)
+        self.run(soundAction)
+    }
+
+    private func showSaladCollectionEffect() {
+        let effectNode = SKLabelNode(text: "+1 Life!")
+        effectNode.fontSize = 20
+        effectNode.fontColor = .green
+        effectNode.position = player.position.applying(CGAffineTransform(translationX: 0, y: 30))
+        addChild(effectNode)
+
+        let moveUp = SKAction.moveBy(x: 0, y: 40, duration: 0.8)
+        let fadeOut = SKAction.fadeOut(withDuration: 0.8)
+        let group = SKAction.group([moveUp, fadeOut])
+        let remove = SKAction.removeFromParent()
+        let sequence = SKAction.sequence([group, remove])
+        
+        effectNode.run(sequence)
     }
 
     // Properly clean up resources in deinit
