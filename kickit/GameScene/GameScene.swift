@@ -324,9 +324,12 @@ class GameScene: SKScene {
         let formattedElapsedTime = format(timeInterval: elapsedTime)
         let currentBestTime = UserDefaults.standard.string(forKey: "bestTime") ?? "99:99.999"
 
-        if formattedElapsedTime > currentBestTime {
+        if formattedElapsedTime < currentBestTime {
             UserDefaults.standard.set(formattedElapsedTime, forKey: "bestTime")
             bestTimeLabel?.text = "Best Time: \(formattedElapsedTime)"
+            
+            // Report best time to Game Center
+            GameCenterManager.shared.reportBestTime(elapsedTime)
         }
 
         let currentBestScore = UserDefaults.standard.integer(forKey: "bestScore")
@@ -334,10 +337,8 @@ class GameScene: SKScene {
             UserDefaults.standard.set(score, forKey: "bestScore")
             bestScoreLabel?.text = "Best Score: \(score)"
 
-            // Report score to Game Center
-            if gameCenterManager?.isAuthenticated == true {
-                reportScoreToGameCenter(score)
-            }
+            // Report best score to Game Center
+            GameCenterManager.shared.reportBestScore(score)
         }
 
         showAlert()
@@ -702,13 +703,14 @@ class GameScene: SKScene {
     }
 
     private func playSaladCollectionSound() {
-        let soundAction = SKAction.playSoundFileNamed("salad_collect.mp3", waitForCompletion: false)
+        let soundAction = SKAction.playSoundFileNamed("munch.mp3", waitForCompletion: false)
         self.run(soundAction)
     }
 
     private func showSaladCollectionEffect() {
         let effectNode = SKLabelNode(text: "+1 Life!")
         effectNode.fontSize = 20
+        effectNode.fontName = "CourierNewPS-BoldMT"
         effectNode.fontColor = .green
         effectNode.position = player.position.applying(CGAffineTransform(translationX: 0, y: 30))
         addChild(effectNode)

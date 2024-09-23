@@ -9,7 +9,8 @@ class GameCenterManager: NSObject, ObservableObject, GKGameCenterControllerDeleg
     @Published var leaderboards: [GKLeaderboard] = []
     @Published var leaderboardEntries: [GKLeaderboard.Entry] = []
 
-
+    let bestTimeLeaderboardID = "002"
+    let bestScoreLeaderboardID = "004"
 
     override init() {
         super.init()
@@ -47,6 +48,28 @@ class GameCenterManager: NSObject, ObservableObject, GKGameCenterControllerDeleg
                 print("Error submitting score: \(error.localizedDescription)")
             } else {
                 print("Score submitted successfully!")
+            }
+        }
+    }
+
+    func reportBestTime(_ time: TimeInterval) {
+        // Convert time to milliseconds (Game Center expects integers)
+        let timeInMilliseconds = Int(time * 1000)
+        reportScore(timeInMilliseconds, toLeaderboard: bestTimeLeaderboardID)
+    }
+
+    func reportBestScore(_ score: Int) {
+        reportScore(score, toLeaderboard: bestScoreLeaderboardID)
+    }
+
+    private func reportScore(_ score: Int, toLeaderboard leaderboardID: String) {
+        guard GKLocalPlayer.local.isAuthenticated else { return }
+
+        GKLeaderboard.submitScore(score, context: 0, player: GKLocalPlayer.local, leaderboardIDs: [leaderboardID]) { error in
+            if let error = error {
+                print("Error submitting score to leaderboard \(leaderboardID): \(error.localizedDescription)")
+            } else {
+                print("Score submitted successfully to leaderboard \(leaderboardID)!")
             }
         }
     }

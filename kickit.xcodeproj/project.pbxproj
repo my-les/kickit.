@@ -13,6 +13,7 @@
 		315D3E5A2C85B90100463A8F /* SplashScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 315D3E592C85B90100463A8F /* SplashScreen.swift */; };
 		315D3E5C2C85B96900463A8F /* Gif+UIImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 315D3E5B2C85B96900463A8F /* Gif+UIImage.swift */; };
 		315D3E5E2C863BD200463A8F /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 315D3E5D2C863BD200463A8F /* Launch Screen.storyboard */; };
+		31750C3E2CA2355100453623 /* munch.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 31750C3D2CA2355100453623 /* munch.mp3 */; };
 		31858E592C4483D7008864A6 /* kickitApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31858E582C4483D7008864A6 /* kickitApp.swift */; };
 		31858E5B2C4483D7008864A6 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31858E5A2C4483D7008864A6 /* ContentView.swift */; };
 		31858E5D2C4483DB008864A6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 31858E5C2C4483DB008864A6 /* Assets.xcassets */; };
@@ -32,6 +33,7 @@
 		315D3E592C85B90100463A8F /* SplashScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashScreen.swift; sourceTree = "<group>"; };
 		315D3E5B2C85B96900463A8F /* Gif+UIImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Gif+UIImage.swift"; sourceTree = "<group>"; };
 		315D3E5D2C863BD200463A8F /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
+		31750C3D2CA2355100453623 /* munch.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = munch.mp3; sourceTree = "<group>"; };
 		31858E552C4483D7008864A6 /* kickit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = kickit.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		31858E582C4483D7008864A6 /* kickitApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = kickitApp.swift; sourceTree = "<group>"; };
 		31858E5A2C4483D7008864A6 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -92,6 +94,7 @@
 				315D3E572C85B8BF00463A8F /* splash.gif */,
 				31AC8B112C89465B005B4BB3 /* money.mp3 */,
 				31AC8B132C8946C4005B4BB3 /* opp.mp3 */,
+				31750C3D2CA2355100453623 /* munch.mp3 */,
 				31858E5E2C4483DB008864A6 /* Preview Content */,
 			);
 			path = kickit;
@@ -165,6 +168,7 @@
 			files = (
 				31AC8B122C89465B005B4BB3 /* money.mp3 in Resources */,
 				31858E602C4483DB008864A6 /* Preview Assets.xcassets in Resources */,
+				31750C3E2CA2355100453623 /* munch.mp3 in Resources */,
 				315D3E582C85B8BF00463A8F /* splash.gif in Resources */,
 				31AC8B142C8946C4005B4BB3 /* opp.mp3 in Resources */,
 				31858E5D2C4483DB008864A6 /* Assets.xcassets in Resources */,
