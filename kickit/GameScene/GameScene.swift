@@ -299,7 +299,7 @@ class GameScene: SKScene {
         pauseButton.texture = SKTexture(imageNamed: "diddy")
         self.isPaused = true
 
-        let pausedLabel = SKLabelNode(text: "NO DIDDY")
+        let pausedLabel = SKLabelNode(text: "PAUSED")
         pausedLabel.fontName = "CourierNewPS-BoldMT"
         pausedLabel.fontSize = 40
         pausedLabel.position = CGPoint(x: size.width / 2, y: size.height / 2)
